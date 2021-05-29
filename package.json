@@ -1,5 +1,5 @@
 {
-  "name": "gnosis-trx-submitter",
+  "name": "gnosis-tx-submitter",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
