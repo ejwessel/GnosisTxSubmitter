@@ -1,0 +1,53 @@
+{
+  "name": "gnosis-trx-submitter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "clean": "hardhat clean",
+    "compile": "hardhat compile",
+    "test:unit": "hardhat test test-unit/*",
+    "test:integration": "hardhat test test-integration/*",
+    "lint": "solhint contracts/**/*.sol contracts/*.sol",
+    "sign": "node scripts/generate_signature.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "contracts/**/*.sol": "solhint -w 0",
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "ethers": "^5.0.0",
+    "ganache-time-traveler": "^1.0.14",
+    "husky": "^4.3.6"
+  },
+  "dependencies": {
+    "@gnosis.pm/safe-core-sdk": "^0.1.2",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^2.1.1",
+    "@nomiclabs/hardhat-truffle5": "^2.0.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/contracts": "^3.4.0",
+    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+    "@openzeppelin/test-helpers": "^0.5.6",
+    "axios": "^0.21.1",
+    "commander": "^7.2.0",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "ethereum-waffle": "^3.0.0",
+    "ganache-cli": "^6.10.2",
+    "hardhat": "^2.1.1",
+    "lint-staged": "^10.5.4",
+    "lodash": "^4.17.20",
+    "prettier": "^2.2.1",
+    "solhint": "^3.3.4",
+    "web3": "^1.3.4"
+  }
+}
