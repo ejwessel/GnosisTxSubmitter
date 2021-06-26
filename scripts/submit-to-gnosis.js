@@ -9,23 +9,44 @@ const TRX_SERVICE_URL = `https://safe-transaction.mainnet.gnosis.io/api/v1/safes
 
 program.version("0.0.1");
 program
-  .requiredOption("-d, --data <string>", "data to submit to gnosis trx service")
+  .requiredOption(
+    "-d, --data <items>",
+    "data to submit to gnosis trx service",
+    commaSeparatedList
+  )
   .parse();
 const options = program.opts();
 const data = options.data;
 
+// eslint-disable-next-line no-unused-vars
+function commaSeparatedList(value, dummyPrevious) {
+  return value.split(",");
+}
+
+function createTxs(dataArray) {
+  const txs = [];
+  dataArray.forEach((data) => {
+    txs.push({
+      to: TARGET_ADDRESS,
+      data: data,
+      value: "0",
+    });
+  });
+  return txs;
+}
+
 async function main() {
   const [deployer] = await ethers.getSigners();
-  const safeSdk = await EthersSafe.create(ethers, SAFE_ADDRESS, deployer);
+  const safeSdk = await EthersSafe.create({
+    ethers,
+    safeAddress: SAFE_ADDRESS,
+    providerOrSigner: deployer,
+  });
   const version = await safeSdk.getContractVersion();
   console.log(`Gnosis Contract Version: ${version.toString()}`);
 
-  const tx = {
-    to: TARGET_ADDRESS,
-    data: data,
-    value: "0",
-  };
-  const safeTransaction = await safeSdk.createTransaction(tx);
+  const txs = createTxs(data);
+  const safeTransaction = await safeSdk.createTransaction(...txs);
   const trxHash = await safeSdk.getTransactionHash(safeTransaction);
   const signatureData = await safeSdk.signTransactionHash(trxHash);
   const {signer: sender, data: signature} = signatureData;
@@ -41,6 +62,9 @@ async function main() {
   try {
     await axios.post(TRX_SERVICE_URL, postData);
     console.log("Submitted Transaction");
+    console.log(
+      `https://gnosis-safe.io/app/#/safes/${TARGET_ADDRESS}/transactions`
+    );
   } catch (e) {
     console.error(e.response.status);
     console.error(e.response.statusText);
