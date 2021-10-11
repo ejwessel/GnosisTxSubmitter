@@ -3,10 +3,6 @@ const {program} = require("commander");
 const axios = require("axios");
 const {default: EthersSafe} = require("@gnosis.pm/safe-core-sdk");
 
-const TARGET_ADDRESS = "0x881D40237659C251811CEC9c364ef91dC08D300C";
-const SAFE_ADDRESS = "0xBc50CBd395314a43302e3bf56677755E5a543a8C";
-const TRX_SERVICE_URL = `https://safe-transaction.mainnet.gnosis.io/api/v1/safes/${SAFE_ADDRESS}/multisig-transactions/`;
-
 program.version("0.0.1");
 program
   .requiredOption(
@@ -14,9 +10,25 @@ program
     "data to submit to gnosis trx service",
     commaSeparatedList
   )
+  .requiredOption(
+    "-t --target <string>",
+    "target contract address to submit data against"
+  )
+  .requiredOption(
+    "-s --safe <string>",
+    "safe address to submit transaction to"
+  )
+  .option(
+    "-n --nonce <number>",
+    "(optional) custom nonce to submit",
+  )
   .parse();
 const options = program.opts();
-const data = options.data;
+const DATA = options.data;
+const NONCE = options.nonce;
+const TARGET_ADDRESS = options.target;
+const SAFE_ADDRESS = options.safe;
+const TRX_SERVICE_URL = `https://safe-transaction.mainnet.gnosis.io/api/v1/safes/${SAFE_ADDRESS}/multisig-transactions/`;
 
 // eslint-disable-next-line no-unused-vars
 function commaSeparatedList(value, dummyPrevious) {
@@ -45,8 +57,9 @@ async function main() {
   const version = await safeSdk.getContractVersion();
   console.log(`Gnosis Contract Version: ${version.toString()}`);
 
-  const txs = createTxs(data);
+  const txs = createTxs(DATA);
   const safeTransaction = await safeSdk.createTransaction(...txs);
+  if (NONCE) safeTransaction.data.nonce = parseInt(NONCE);
   const trxHash = await safeSdk.getTransactionHash(safeTransaction);
   const signatureData = await safeSdk.signTransactionHash(trxHash);
   const {signer: sender, data: signature} = signatureData;
