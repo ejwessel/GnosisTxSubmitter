@@ -1,6 +1,6 @@
 # Gnosis Tx Submitter
 
-* https://docs.gnosis.io/safe/docs/tutorial_tx_service_initiate_sign/#sign
+* https://docs.gnosis-safe.io/tutorials/tutorial_tx_service_initiate_sign
 * https://github.com/gnosis/safe-core-sdk/tree/main/packages/safe-core-sdk
 
 .env:
